@@ -43,11 +43,11 @@ from PIL import Image, ImageTk, ImageSequence, ImageDraw
 # ---------------------------------------------------------------------
 # CONFIG - put your key here (or load from an env var / config file)
 # ---------------------------------------------------------------------
-ETHERSCAN_API_KEY = os.getenv("ETHERSCAN_API_KEY", "YOUR_ETHERSCAN_API_KEY")
+ETHERSCAN_API_KEY = os.getenv("ETHERSCAN_API_KEY", "89Z4XH1CS5KTV2QU6I2Y66TFEPAW2YEBFI")
 
 # Optional live reputation integrations. Keep secrets out of source code.
 # Configure these as environment variables before running ChainHawk.
-CHAINABUSE_API_KEY = os.getenv("CHAINABUSE_API_KEY", "")
+CHAINABUSE_API_KEY = os.getenv("CHAINABUSE_API_KEY", "ca_cFBsTEpaTkN2ZUhGSkFrQWVodXNNYXNVLmdoRFNLZUFqNnYxclYyL3g4L09CaWc9PQ")
 CRYPTO_SCAM_DB_URL = os.getenv("CRYPTO_SCAM_DB_URL", "https://api.cryptoscamdb.org/v1/check")
 ALERT_INTERVAL_SECONDS = int(os.getenv("CHAINHAWK_ALERT_INTERVAL", "60"))
 
@@ -1530,7 +1530,7 @@ class ProjectInfoWindow(tk.Toplevel):
             "CryptoScamDB can be used through its configured public endpoint. Keep credentials in environment variables."
         )
         self.doc.insert("end", "RUN THE TOOL\n", "subsection")
-        self.doc.insert("end", "python ChainHawk_Rev12.py\n\n", "code")
+        self.doc.insert("end", "python \"ChainHawk Launch.py\"\n\n", "code")
         body_text(
             "Create an account or use an existing local account, then enter a BTC or ETH wallet address and "
             "start the investigation. Read the activity stream, compare network / transaction / reputation "
@@ -2418,14 +2418,32 @@ class OsintApp(tk.Frame):
             tk.Label(card,text="CONFIGURED" if configured else "NOT CONFIGURED",bg="#0d1726",fg="#39ff88" if configured else "#ffb04a",font=("Consolas",8,"bold")).pack(side="right",padx=12)
             status_labels.append((card,url,name))
         def test():
-            for _,url,name in status_labels:
-                try:
-                    r=requests.get(url,timeout=8,headers={"User-Agent":"ChainHawk/11.0"})
-                    code=r.status_code
-                    msg=f"{name}: HTTP {code}"
-                    self.log("API     "+msg)
-                except Exception as e: self.log(f"API     {name}: ERROR {e}")
-            messagebox.showinfo("API Test", "Connection tests completed. Review the Activity Stream for provider status and HTTP codes.")
+            def worker():
+                results = []
+                for _, url, name in status_labels:
+                    try:
+                        r = requests.get(
+                            url,
+                            timeout=8,
+                            headers={"User-Agent": "ChainHawk/11.0"}
+                        )
+                        results.append(f"{name}: HTTP {r.status_code}")
+                    except Exception as e:
+                        results.append(f"{name}: ERROR {e}")
+
+                def finish():
+                    for msg in results:
+                        self.log("API     " + msg)
+                    if win.winfo_exists():
+                        messagebox.showinfo(
+                            "API Test",
+                            "Connection tests completed. Review the Activity Stream for provider status and HTTP codes.",
+                            parent=win
+                        )
+
+                self.after(0, finish)
+
+            threading.Thread(target=worker, daemon=True).start()
         tk.Button(win,text="TEST CONNECTIONS",command=test,bg="#12324a",fg="#76dfff",relief="flat",font=("Consolas",9,"bold"),padx=16,pady=9).pack(pady=16)
 
     def open_timeline(self):
