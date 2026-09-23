@@ -43,11 +43,11 @@ from PIL import Image, ImageTk, ImageSequence, ImageDraw
 # ---------------------------------------------------------------------
 # CONFIG - put your key here (or load from an env var / config file)
 # ---------------------------------------------------------------------
-ETHERSCAN_API_KEY = os.getenv("ETHERSCAN_API_KEY", "89Z4XH1CS5KTV2QU6I2Y66TFEPAW2YEBFI")
+ETHERSCAN_API_KEY = os.getenv("ETHERSCAN_API_KEY", "YOUR_ETHERSCAN_API_KEY")
 
 # Optional live reputation integrations. Keep secrets out of source code.
 # Configure these as environment variables before running ChainHawk.
-CHAINABUSE_API_KEY = os.getenv("CHAINABUSE_API_KEY", "ca_cFBsTEpaTkN2ZUhGSkFrQWVodXNNYXNVLmdoRFNLZUFqNnYxclYyL3g4L09CaWc9PQ")
+CHAINABUSE_API_KEY = os.getenv("CHAINABUSE_API_KEY", "")
 CRYPTO_SCAM_DB_URL = os.getenv("CRYPTO_SCAM_DB_URL", "https://api.cryptoscamdb.org/v1/check")
 ALERT_INTERVAL_SECONDS = int(os.getenv("CHAINHAWK_ALERT_INTERVAL", "60"))
 
